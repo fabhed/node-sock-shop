@@ -1,0 +1,177 @@
+To create a basic e-commerce website using Node.js, we will use the following packages:
+
+- express: for creating the web server
+- ejs: for rendering the HTML templates
+- body-parser: for parsing the request body
+
+First, let's create a `package.json` file to manage our dependencies:
+
+package.json
+```json
+{
+  "name": "socks-ecommerce",
+  "version": "1.0.0",
+  "description": "A simple e-commerce website to sell socks",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1"
+  }
+}
+```
+
+Now, let's create the main application file `app.js`:
+
+app.js
+```javascript
+const express = require('express');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+const shopRoutes = require('./routes/shop');
+
+app.use(shopRoutes);
+
+app.listen(8000, () => {
+  console.log('Server is running on port 8000');
+});
+```
+
+Next, we will create the routes for our shop in a new file called `routes/shop.js`:
+
+routes/shop.js
+```javascript
+const express = require('express');
+const router = express.Router();
+
+router.get('/', (req, res, next) => {
+  res.render('shop', {
+    pageTitle: 'Socks Shop',
+    path: '/',
+    socks: [
+      {
+        id: 1,
+        name: 'Colorful Socks',
+        price: 9.99,
+        imageUrl: '/images/colorful-socks.jpg'
+      },
+      {
+        id: 2,
+        name: 'Striped Socks',
+        price: 7.99,
+        imageUrl: '/images/striped-socks.jpg'
+      }
+    ]
+  });
+});
+
+module.exports = router;
+```
+
+Now, let's create the EJS template for our shop in a new file called `views/shop.ejs`:
+
+views/shop.ejs
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Socks Shop</h1>
+  </header>
+  <main>
+    <ul class="socks-list">
+      <% socks.forEach(sock => { %>
+        <li class="sock-item">
+          <img src="<%= sock.imageUrl %>" alt="<%= sock.name %>">
+          <h2><%= sock.name %></h2>
+          <p>Price: $<%= sock.price.toFixed(2) %></p>
+          <button>Buy</button>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>
+```
+
+Finally, let's create a basic CSS file for styling our website in a new file called `public/css/styles.css`:
+
+public/css/styles.css
+```css
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+main {
+  padding: 2rem;
+}
+
+.socks-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sock-item {
+  width: 300px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 1rem;
+  text-align: center;
+}
+
+.sock-item img {
+  width: 100%;
+  height: auto;
+}
+
+.sock-item button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.sock-item button:hover {
+  background-color: #555;
+}
+```
+
+To run the application, execute the following command in the terminal:
+
+```
+npm install
+npm start
+```
+
+Now, you can access the website at http://localhost:8000.
